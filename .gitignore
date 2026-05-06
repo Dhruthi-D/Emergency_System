@@ -1,0 +1,14 @@
+# Local secrets — use .env.example as template
+.env
+
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+
+# Django
+backend/media/
+
+# React
+frontend/node_modules/
+frontend/build/
