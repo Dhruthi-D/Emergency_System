@@ -26,7 +26,7 @@ BENGALURU_FALLBACK_RADIUS_M = 25000
 def service_types_for_incident(incident_type):
     if incident_type == "health":
         return ["hospital"]
-    if incident_type == "fire":
+    if incident_type in {"fire", "gas"}:
         return ["fire_station"]
     if incident_type == "accident":
         return ["hospital", "fire_station"]

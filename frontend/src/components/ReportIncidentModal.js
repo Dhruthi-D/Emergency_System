@@ -79,6 +79,9 @@ export default function ReportIncidentModal({ onClose, onSubmit, loading }) {
     });
   };
 
+  const latitudeValue = manual.latitude || geo.latitude;
+  const longitudeValue = manual.longitude || geo.longitude;
+
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(2,6,23,0.82)", zIndex: 99, overflowY: "auto", padding: "14px 10px 28px", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
       <div style={{ width: "min(94vw, 560px)", background: "#111827", borderRadius: 16, padding: 16, border: "1px solid #1f2937", maxHeight: "90vh", overflowY: "auto", boxSizing: "border-box" }}>
@@ -92,15 +95,15 @@ export default function ReportIncidentModal({ onClose, onSubmit, loading }) {
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" style={{ width: "100%", minHeight: 78, padding: "10px 12px", borderRadius: 10, border: "1px solid #374151", background: "#0f172a", color: "#fff", boxSizing: "border-box" }} />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 8, marginTop: 8 }}>
           <input
-            value={manual.latitude}
+            value={latitudeValue}
             onChange={(e) => setManual({ ...manual, latitude: e.target.value })}
-            placeholder={geo.latitude ? `Latitude (auto: ${geo.latitude})` : "Latitude (optional)"}
+            placeholder="Latitude"
             style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", borderRadius: 10, border: "1px solid #374151", background: "#0f172a", color: "#fff" }}
           />
           <input
-            value={manual.longitude}
+            value={longitudeValue}
             onChange={(e) => setManual({ ...manual, longitude: e.target.value })}
-            placeholder={geo.longitude ? `Longitude (auto: ${geo.longitude})` : "Longitude (optional)"}
+            placeholder="Longitude"
             style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", borderRadius: 10, border: "1px solid #374151", background: "#0f172a", color: "#fff" }}
           />
         </div>

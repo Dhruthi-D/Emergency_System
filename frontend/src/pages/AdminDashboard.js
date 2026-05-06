@@ -38,7 +38,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     loadDashboard();
     const wsUrl =
-      process.env.REACT_APP_WS_URL || "ws://localhost:8000/ws/incidents/";
+      process.env.REACT_APP_WS_URL ||
+      `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws/incidents/`;
     const ws = new WebSocket(wsUrl);
     ws.onmessage = (evt) => {
       const { payload } = JSON.parse(evt.data);
