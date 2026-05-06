@@ -45,7 +45,7 @@ export default function CitizenDashboard() {
     <div style={{ minHeight: "100vh", background: "#0d1117", color: "white", padding: 16 }}>
       <div style={{ maxWidth: 980, margin: "0 auto" }}>
         <h2 style={{ margin: "0 0 4px", fontSize: 30 }}>Citizen Dashboard</h2>
-        <div style={{ color: "#94a3b8", marginBottom: 14 }}>Track real-time incidents and report emergencies quickly.</div>
+        <div style={{ color: "#94a3b8", marginBottom: 14 }}>Track Real-Time incidents and report emergencies quickly.</div>
         {incidents.length === 0 && <div style={{ background: "#111827", border: "1px solid #1f2937", color: "#9ca3af", padding: 12, borderRadius: 12 }}>No incidents yet. Use Report Incident to create one.</div>}
         {incidents.map((incident) => <IncidentCard key={incident.id} incident={incident} />)}
       </div>
