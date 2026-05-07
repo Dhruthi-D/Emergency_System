@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const types = ["accident", "fire", "gas", "health"];
+const types = ["Accident", "Fire", "Gas Leakage", "Health"];
 const MAX_IMAGES = 3;
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
 const MAX_IMAGE_DIMENSION = 1600;
@@ -144,6 +144,10 @@ export default function ReportIncidentModal({ onClose, onSubmit, loading }) {
       setError("Location required. Fetch automatically or enter coordinates manually.");
       return;
     }
+    if (!description.trim()) {
+      alert("Description is required");
+      return;
+    }
     onSubmit({
       type,
       description,
@@ -189,7 +193,22 @@ export default function ReportIncidentModal({ onClose, onSubmit, loading }) {
           ))}
         </select>
 
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" style={{ width: "100%", minHeight: 78, padding: "10px 12px", borderRadius: 10, border: "1px solid #374151", background: "#0f172a", color: "#fff", boxSizing: "border-box" }} />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter incident description"
+          required
+          style={{
+            width: "100%",
+            minHeight: 78,
+            padding: "10px 12px",
+            borderRadius: 10,
+            border: "1px solid #374151",
+            background: "#0f172a",
+            color: "#fff",
+            boxSizing: "border-box"
+          }}
+        />
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 8, marginTop: 8 }}>
           <input
@@ -239,7 +258,7 @@ export default function ReportIncidentModal({ onClose, onSubmit, loading }) {
             style={{ display: "none" }}
           />
           <div style={{ fontWeight: 900 }}>Drop images here or click to upload</div>
-          <div style={{ marginTop: 4, color: "#94a3b8", fontSize: 13 }}>Stored locally by Django. Up to {MAX_IMAGES} images, 8 MB each.</div>
+          <div style={{ marginTop: 4, color: "#94a3b8", fontSize: 13 }}>Up to {MAX_IMAGES} images, 8 MB each.</div>
         </div>
 
         {captured.length > 0 && (
