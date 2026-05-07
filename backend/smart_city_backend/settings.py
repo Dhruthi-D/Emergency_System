@@ -8,6 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Repo root: idp_new/ (parent of backend/)
 PROJECT_ROOT = BASE_DIR.parent
 load_dotenv(PROJECT_ROOT / ".env")
+load_dotenv(BASE_DIR / ".env", override=True)
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = os.getenv("DEBUG", "1") == "1"

@@ -15,6 +15,8 @@ export const setToken = (token) => {
   }
 };
 
+export const getToken = () => localStorage.getItem("token");
+
 const saved = localStorage.getItem("token");
 if (saved) setToken(saved);
 

@@ -15,6 +15,7 @@ class Incident(models.Model):
         ("dispatched", "Dispatched"),
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
+        ("fake", "Fake"),
     )
 
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)

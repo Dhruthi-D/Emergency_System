@@ -1,4 +1,5 @@
 from django.db.models import Count
+from django.shortcuts import get_object_or_404
 import requests
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -21,6 +22,16 @@ HTTP_HEADERS = {
 }
 BENGALURU_CENTER = {"lat": 12.9716, "lng": 77.5946}
 BENGALURU_FALLBACK_RADIUS_M = 25000
+
+
+def is_admin_user(request):
+    return getattr(request.user, "role", None) == "admin"
+
+
+def admin_required_response(request):
+    if is_admin_user(request):
+        return None
+    return Response({"detail": "Admin access is required."}, status=status.HTTP_403_FORBIDDEN)
 
 
 def service_types_for_incident(incident_type):
@@ -146,11 +157,14 @@ def fetch_osm_services(lat, lng, incident_type, radius_m=4500, limit=6):
 
 @api_view(["GET"])
 def dashboard_view(request):
-    incidents = Incident.objects.all()[:100]
+    denied = admin_required_response(request)
+    if denied:
+        return denied
+    incidents = Incident.objects.select_related("created_by").prefetch_related("images").all()[:100]
     counts = Incident.objects.values("status").annotate(total=Count("id"))
     return Response(
         {
-            "incidents": IncidentSerializer(incidents, many=True).data,
+            "incidents": IncidentSerializer(incidents, many=True, context={"request": request}).data,
             "services": [],
             "junctions": [],
             "status_counts": list(counts),
@@ -160,10 +174,15 @@ def dashboard_view(request):
 
 @api_view(["GET"])
 def nearby_services_view(request):
+    denied = admin_required_response(request)
+    if denied:
+        return denied
     incident_id = request.query_params.get("incident_id")
     if not incident_id:
         return Response({"detail": "incident_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-    incident = Incident.objects.get(id=incident_id)
+    incident = get_object_or_404(Incident, id=incident_id)
+    if incident.status == "fake":
+        return Response({"detail": "Cleared incidents do not need responder lookup."}, status=status.HTTP_400_BAD_REQUEST)
     ranked = fetch_osm_services(incident.latitude, incident.longitude, incident.type, limit=3)
     nearest_service = ranked[0] if ranked else None
     route = []
@@ -189,9 +208,16 @@ def nearby_services_view(request):
 
 @api_view(["POST"])
 def dispatch_view(request):
+    denied = admin_required_response(request)
+    if denied:
+        return denied
     incident_id = request.data.get("incident_id")
     vehicle_count = int(request.data.get("vehicle_count", 1))
-    incident = Incident.objects.get(id=incident_id)
+    incident = get_object_or_404(Incident, id=incident_id)
+    if incident.status == "fake":
+        return Response({"detail": "Cleared incidents cannot be dispatched."}, status=status.HTTP_400_BAD_REQUEST)
+    if incident.status == "completed":
+        return Response({"detail": "Completed incidents cannot be dispatched again."}, status=status.HTTP_400_BAD_REQUEST)
     services = fetch_osm_services(incident.latitude, incident.longitude, incident.type, limit=3)
     if not services:
         # Final broad pass across Bengaluru before failing.
@@ -223,7 +249,7 @@ def dispatch_view(request):
 
     incident.status = "dispatched"
     incident.save(update_fields=["status", "updated_at"])
-    broadcast_incident("status_updated", IncidentSerializer(incident).data)
+    broadcast_incident("status_updated", IncidentSerializer(incident, context={"request": request}).data)
 
     signal_state = []
     for idx, point in enumerate(route[::8]):
