@@ -45,7 +45,11 @@ export default function ReportIncidentModal({ onClose, onSubmit, loading }) {
       return;
     }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: {
+          facingMode: { ideal: "environment" } // rear camera
+        }
+      });
       streamRef.current = stream;
       if (videoRef.current) videoRef.current.srcObject = stream;
       setError("");

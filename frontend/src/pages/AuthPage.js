@@ -5,6 +5,7 @@ export default function AuthPage({ onAuth }) {
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "citizen" });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const submit = async () => {
     try {
@@ -40,11 +41,37 @@ export default function AuthPage({ onAuth }) {
           style={{ width: "100%", boxSizing: "border-box", marginBottom: 10, padding: "13px 14px", borderRadius: 12, border: "1px solid #374151", background: "#0f172a", color: "#fff", fontSize: "clamp(15px, 3.7vw, 17px)" }}
         />
         <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          style={{ width: "100%", boxSizing: "border-box", marginBottom: 10, padding: "13px 14px", borderRadius: 12, border: "1px solid #374151", background: "#0f172a", color: "#fff", fontSize: "clamp(15px, 3.7vw, 17px)" }}
-        />
+    type={showPassword ? "text" : "password"}
+    placeholder="Password"
+    onChange={(e) => setForm({ ...form, password: e.target.value })}
+    style={{
+      width: "100%",
+      boxSizing: "border-box",
+      padding: "13px 45px 13px 14px",
+      borderRadius: 12,
+      border: "1px solid #374151",
+      background: "#0f172a",
+      color: "#fff",
+      fontSize: "clamp(15px, 3.7vw, 17px)"
+    }}
+  />
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    style={{
+      position: "absolute",
+      right: 10,
+      top: "50%",
+      transform: "translateY(-50%)",
+      background: "transparent",
+      border: "none",
+      color: "#9ca3af",
+      cursor: "pointer",
+      fontSize: "14px"
+    }}
+  >
+    {showPassword ? "Hide" : "Show"}
+  </button>
         {mode === "register" && (
           <select
             onChange={(e) => setForm({ ...form, role: e.target.value })}
